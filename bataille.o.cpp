@@ -1,6 +1,6 @@
 // original code : https://github.com/cristal-smac/bataille/blob/main/records_C4_naturelle.py
 // records : https://github.com/cristal-smac/bataille/blob/main/records_C4_naturelle.py
-// to compile on Linux : gcc -O4 bataille.cpp
+// to compile on Linux : gcc -O3 -march=native bataille.o.cpp
 
 #define _CRT_SECURE_NO_WARNINGS 1
 #include <stdio.h>
@@ -558,7 +558,7 @@ void allOne(JEU* jeu, const TYP vmax) {
     const int nb = jeu->nb;
     for (int i = 0; i < nb; i++) jeu->cartes[i] = vmax;
     int nbSur2 = nb >> 1;
-    // place 4 cartes 1, les 2 premières sont forcement dans la 1ere moitie, sinon on parcourt des solutions symetriques
+    // place 4 cartes 1, les 2 premiÃ¨res sont forcement dans la 1ere moitie, sinon on parcourt des solutions symetriques
     //                   ex : xxxx11x1 = 1x11xxxx
     for (int i = 0; i < nbSur2 - 1; i++) {
         jeu->cartes[i] = 1;
