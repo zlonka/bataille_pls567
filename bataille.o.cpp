@@ -276,12 +276,15 @@ TYP playNat(bool trace = true) {
         if (trace) { printf(" => ");  disp(); printf("\n"); }
     }
 }
+#define LOOPMAXSIZE 16384
 typedef struct{
 	JEU j1, j2, c;
 }LOOP;
-LOOP loop[8192];
+LOOP loop[LOOPMAXSIZE];
+int iLoopMax = 0, loopSizeMin = 999999;
 int detectLoop(const int nb){
-	for(int i=nb-1;i>=0;i--){
+	for(int i=nb-1, loopSize=0;i>=0;i--){
+		if (loopSize++ > loopSizeMin) break;	// no need to search for smaller loop...
 		if(loop[i].j1.nb==j1.nb && loop[i].j2.nb==j2.nb && loop[i].c.nb==centre.nb
 			&& !memcmp(loop[i].j1.cartes, j1.cartes, j1.nb * sizeof(TYP))
 			&& !memcmp(loop[i].j2.cartes, j2.cartes, j2.nb * sizeof(TYP))
@@ -292,12 +295,9 @@ int detectLoop(const int nb){
 	}
 	return 0;
 }
-int iLoopMax=0, loopSizeMin=999999;
 void addLoop(const int i){
-	if (i > iLoopMax){
-		iLoopMax = i;
-		// fprintf(stderr, "iLoopMax=%d\n", iLoopMax);
-	}
+	if (i >= LOOPMAXSIZE){ fprintf(stderr, "Fatal Error, loop detection overflow (>%d)\n", LOOPMAXSIZE); exit(8); }
+	// if (i > iLoopMax){ iLoopMax = i; if (false) fprintf(stderr, "iLoopMax=%d/%d\n", iLoopMax, LOOPMAXSIZE); }
 	memcpy(&loop[i].j1, &j1, sizeof(JEU));
 	memcpy(&loop[i].j2, &j2, sizeof(JEU));
 	memcpy(&loop[i].c, &centre, sizeof(JEU));
@@ -1286,7 +1286,7 @@ int main(int argc, char** argv) {
 			tNow = time(NULL);
 			if (tNow > tDepart){
 				dispDelai(stderr, tDepart, tNow);
-				sprintf(speedStr, " %.2lf M/s", attemptTot/(double)(tNow-tDepart)/1000000.0);
+				sprintf(speedStr, " %.2lf K/s", 0.001*attemptTot/(double)(tNow-tDepart));
 				fprintf(stderr, "%s", speedStr);
 			}
 			fprintf(stderr, " %c", 13);
@@ -1438,10 +1438,11 @@ int main(int argc, char** argv) {
                 printf("J1 : ");        jeuDisp(&j1);
                 printf(" J2 : ");       jeuDisp(&j2);
                 printf(" : new nbRoundMax=%d/%d", roundMax, roundLimit);
+                printf(" min loop size=%d", loopSizeMin);
                 printf(" after %u attempts", attempt);
                 time_t t1 = time(NULL);
                 printf(" (%ld')", (t1-t0));
-                if (t1==t0) printf("---M/s"); else printf(" (%.2lfM/s)", (double)attempt/(double)(t1-t0));
+                if (t1==t0) printf("---K/s"); else printf(" (%.2lfK/s)", 0.001*(double)attempt/(double)(t1-t0));
                 printf("\n");
                 if (roundMax > record) {
                     roundLimit = roundMax + 100;	// update roundLimit
