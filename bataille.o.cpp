@@ -19,10 +19,14 @@
 #if RANGEMENT == OPT
 #define RANGEMENT_STR "optimise"
 #define FRECORDS "records.o.txt"
+int tRecordPreset[] = { 0, 0, 8, 48, 138, 384, 760, 2760, 2006, 2470, 3020, 16338, 4516, 5594 };
+int tLoopMinRecordPreset[] = { 0, 0, 0, 0, 0, 28, 0, 44, 0, 0, 0, 1098, 0, 0 };
 #define play playOpt
 #elif RANGEMENT == NAT
 #define RANGEMENT_STR "naturel"
 #define FRECORDS "records.txt"
+int tRecordPreset[] = { 0, 0, 8, 54, 192, 562, 1190, 1880, 2602, 3024, 4120, 4582, 5346, 6504 };
+int tLoopMinRecordPreset[] = { 0, 0, 0, 19, 24, 0, 36, 52, 48, 0, 0, 1152, 0, 0 };
 #define play playNat
 #else
 #error "RANGEMENT must be OPT or NAT."
@@ -910,16 +914,8 @@ int main(int argc, char** argv) {
 
     TYP valeur = 1;
     v = vDep;
-    if (v >= 4) record = 190;
-    if (v >= 5) record = 562;
-    if (v >= 6) record = 178;
-    if (v >= 7) record = 1768;
-    if (v >= 8) record = 2546;
-    if (v >= 9) record = 2926;
-    if (v >= 10) record = 3606;
-    if (v >= 11) record = 1200;
-    if (v >= 12) record = 4860;
-    if (v >= 13) record = 5942;
+	record = tRecordPreset[v];
+	loopMinRecord = tLoopMinRecordPreset[v];
     recordLoad(v);
     roundLimit = record + 100;
     printf("*** MODE RANGEMENT : %s *** current record : %u, loopMinRecord : %u, roundLimit=%d\n", RANGEMENT_STR, record, loopMinRecord, roundLimit);
